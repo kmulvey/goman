@@ -28,24 +28,24 @@ func main() {
 	os.Mkdir("."+string(filepath.Separator)+name, 0755)
 
 	p := Framework{name}
-	//tmpl, err := template.ParseFiles("templates/gin/gin")
-	tmpl, err := template.ParseFiles("templates/gin/server.go")
-	fmt.Printf("%+v", tmpl)
-	_ = tmpl.ExecuteTemplate(os.Stdout, tmpl.Name(), p)
+
+	// open output file
+	fo, err := os.Create("test/server.go")
 	if err != nil {
 		panic(err)
 	}
-	/*
-		// open output file
-		fo, err := os.Create("test/server.go")
-		if err != nil {
+	// close fo on exit and check for its returned error
+	defer func() {
+		if err := fo.Close(); err != nil {
 			panic(err)
 		}
-		// close fo on exit and check for its returned error
-		defer func() {
-			if err := fo.Close(); err != nil {
-				panic(err)
-			}
-		}()
-	*/
+	}()
+
+	// process template
+	tmpl, err := template.ParseFiles("templates/gin/server.go")
+	_ = tmpl.ExecuteTemplate(fo, tmpl.Name(), p)
+	if err != nil {
+		panic(err)
+	}
+
 }

@@ -9,7 +9,8 @@ import (
 )
 
 type Framework struct {
-	Name string
+	Name       string
+	Middleware []string
 }
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 	name := string(nameArr)
 	os.Mkdir("."+string(filepath.Separator)+name, 0755)
 
-	p := Framework{name}
+	f := Framework{name, make([]string, 0)}
 
 	// open output file
 	fo, err := os.Create("test/server.go")
@@ -43,7 +44,7 @@ func main() {
 
 	// process template
 	tmpl, err := template.ParseFiles("templates/gin/server.go")
-	_ = tmpl.ExecuteTemplate(fo, tmpl.Name(), p)
+	_ = tmpl.ExecuteTemplate(fo, tmpl.Name(), f)
 	if err != nil {
 		panic(err)
 	}

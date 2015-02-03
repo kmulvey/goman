@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,11 +21,18 @@ func main() {
 	getConfigs(&frameworks)
 
 	// talk to the user
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter project name: ")
-	nameArr, _, _ := reader.ReadLine()
-	name := string(nameArr)
-	os.Mkdir("."+string(filepath.Separator)+name, 0755)
+	//reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Select a framework")
+	for i := range frameworks {
+		fmt.Printf("%d) %s\n", i, frameworks[i].Name)
+	}
+	fmt.Print("\n> ")
+	var selectedFramework int
+	_, err := fmt.Scanf("%d", &selectedFramework)
+	if err != nil {
+		panic(err)
+	}
+	os.Mkdir("."+string(filepath.Separator)+frameworks[selectedFramework].Name, 0755)
 
 	/*
 		f := Framework{name, make([]string, 1)}
@@ -60,3 +66,7 @@ func getConfigs(frameworks *[]Framework) {
 	}
 	json.Unmarshal(file, &frameworks)
 }
+
+// read strings
+//nameArr, _, _ := reader.ReadLine()
+//name := string(nameArr)

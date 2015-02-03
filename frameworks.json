@@ -1,0 +1,19 @@
+{
+	"gin": {
+		"name": "gin",
+		"url": "https://github.com/gin-gonic/gin",
+		"importUrl": "github.com/gin-gonic/gin",
+		"middleware": [
+			"cache": {
+				"name": "cache",
+				"url": "https://github.com/gin-gonic/contrib/cache",
+				"importUrl": "github.com/gin-gonic/contrib/cache"
+			},
+			"gzip": {
+				"name": "gzip",
+				"url": "https://github.com/gin-gonic/contrib/gzip",
+				"importUrl": "github.com/gin-gonic/contrib/gzip"
+			}
+		]
+	}
+}

@@ -4,24 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"time"
+
+	"github.com/tj/go-spin"
 )
 
 func main() {
-	/*
-		s := spin.New()
-		for i := 0; i < 30; i++ {
-			fmt.Printf("\r  \033[36mcomputing\033[m %s ", s.Next())
-			time.Sleep(100 * time.Millisecond)
-		}
-	*/
 	// load configs
 	var frameworks []Framework
 	getConfigs(&frameworks)
 
 	// talk to the user
-	//reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Select a framework")
 	for i := range frameworks {
 		fmt.Printf("%d) %s\n", i, frameworks[i].Name)
@@ -32,8 +29,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	// create the directory
 	os.Mkdir("."+string(filepath.Separator)+frameworks[selectedFramework].Name, 0755)
 
+	messages := make(chan string)
+	go postScripts(messages)
+	s := spin.New()
+	var done string
+	for done == "" {
+		fmt.Printf("\r  \033[36mcomputing\033[m %s ", s.Next())
+		done = <-messages
+		fmt.Println("done: ", done)
+		time.Sleep(100 * time.Millisecond)
+	}
 	/*
 		f := Framework{name, make([]string, 1)}
 
@@ -66,7 +74,31 @@ func getConfigs(frameworks *[]Framework) {
 	}
 	json.Unmarshal(file, &frameworks)
 }
+func postScripts(messages chan string) {
+	cmd := exec.Command("go", "get")
+	err := cmd.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = cmd.Wait()
+	if err != nil {
+		log.Printf("Command finished with error: %v", err)
+	}
+	time.Sleep(10000 * time.Millisecond)
+	messages <- "done"
+}
 
 // read strings
+//reader := bufio.NewReader(os.Stdin)
 //nameArr, _, _ := reader.ReadLine()
 //name := string(nameArr)
+
+/*
+spinner
+s := spin.New()
+
+		for i := 0; i < 30; i++ {
+			fmt.Printf("\r  \033[36mcomputing\033[m %s ", s.Next())
+			time.Sleep(100 * time.Millisecond)
+		}
+*/
